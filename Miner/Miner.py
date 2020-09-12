@@ -12,11 +12,13 @@ class Miner:
 		self.genre=""
 		self.size=""
 		self.newsfiles=[]
-		self.block=Block.Block(id,"","","")
+		self.block=Block(id,"","","")
 
-	def ReceiveContent(self):
+	def ReceiveContent(self,id,text,genre):
+		temp={"id":id,"text":text,"genre":genre}
+		self.newsfiles.append(temp)
+		#broadcast to all
 		#Write code for recieving news content in pool
-		return ""
 
 	def SelectNews(self,fileName):
 		#Write code for selecting  news
@@ -28,7 +30,7 @@ class Miner:
 
 	def CreateBlock(self):
 		#Write code for creating a block
-		self.block=Block.Block(self.id,self.previous_hash,self.genre,self.size)
+		self.block=Block(self.id,self.previous_hash,self.genre,self.size)
 
 
 
