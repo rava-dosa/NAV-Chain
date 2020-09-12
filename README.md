@@ -42,6 +42,8 @@
 * LinkedIn: [@apoorva-kumar](https://linkedin.com/in/apoorva-kumar/)
 
 👤 **Gaurav Jha**
+* Github: [@Gjhakgp](https://github.com/Gjhakgp)
+* LinkedIn: [@gaurav-jha-5097bb169](https://www.linkedin.com/in/gaurav-jha-5097bb169/)
 
 ## Show your support
 
