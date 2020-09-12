@@ -3,9 +3,10 @@ from merklelib import MerkleTree,export,beautify
 import hashlib
 import ipfshttpclient as ipfs
 import json
+from BlockChain import BlockChain
 
 class Block:
-	def __init__(self,miner_id,previous_Hash,genre,size):
+	def __init__(self,miner_id,previous_Hash,previousHashBlockAddress,genre,size):
 		timestamp=str(time.time())
 		newsTreeRootHash=""
 		newsTree=""
@@ -15,15 +16,20 @@ class Block:
 		self.block={"Header":{"Timestamp":timestamp,
 				"MinerId":miner_id,
 				"PreviousHash":previous_Hash,
+				"PreviousHashBlockAddress":previousHashBlockAddress
 				"Genre":genre,
 				"Size":size,
 				"NewsTreeRootHash":newsTreeRootHash,
-				"UserTreeRootHash":userTreeRootHash},
+				"UserTreeRootHash":userTreeRootHash,
+				"BlockScore":0},
 				
 				"Body":{"NewsTree":newsTree,
 				"UserTree":userTree,
 				"NewsContent":[],
-				"UserContent":{}}}
+				"UserContent":{},
+				"Vote":{},
+				"TotalVote":{},
+				"NewsScore":{}}}
 
 	def hashfunc(value):
 		return hashlib.sha256(value).hexdigest()
@@ -53,8 +59,7 @@ class Block:
 	def updateUsers(self,UserId,UserFilesHash):
 		userContent={}
 		for x,y in zip(UserId,UserFilesHash):
-			userContent[x]=y
-		self.block["Body"]["UserContent"]=userContent
+			self.block["Body"]["UserContent"][x]=y
 
 	def getHeader(self):
 		return self.block["Header"]
@@ -87,32 +92,34 @@ class Block:
 		else:
 			return [tree["name"]]
 
+	
+
+	def calculateVotingScore(self):
+		bLockChain=BlockChain()
+		totalNews=0
+		totalScore=0
+		for newsHash,vote in self.block["Body"]["Vote"].items():
+			TotalVote=self.block["Body"]["TotalVote"][newsHash]
+			score=0
+			for miner,v in vote.items():
+				minerDetailsFile=self.block["Body"]["UserContent"][miner]
+				voterRating=bLockChain.getVoterRating(miner,minerDetailsFile)
+				score=score+voterRating*v
+			newsScore=score/TotalVote
+			self.block["Body"]["NewsScore"][newsHash]=newsScore
+			totalScore=totalScore+newsScore
+			totalNews=totalNews+1
+		self.block["Header"]["BlockScore"]=totalScore/totalNews
 
 
-# block=Block("1234","adnjvnkjvndknv","Sports",87946)
-# newsFile=["QmQPeNsJPyVWPFDVHb77w8G42Fvo15z4bG2X8D2GhfbSXc","QmQUyZJb3z46AY7BSMhmjakr1ASwoUd1wH534qQfr8mWgS","QmQb4UUw6DBPVrLwKEoiNKh6UaMiQPSyUuUcidLFVUEH53"]
-# userFile=["QmQPeNsJPyVWPFDVHb77w8G42Fvo15z4bG2X8D2GhfbSXc","QmQUyZJb3z46AY7BSMhmjakr1ASwoUd1wH534qQfr8mWgS","QmQb4UUw6DBPVrLwKEoiNKh6UaMiQPSyUuUcidLFVUEH53"]
-# userId=["1234","5678","9102"]
-# block.addNews(newsFile)
-# block.updateUsers(userId,userFile)
-# block.createNewsMerkleTree(newsFile)
-# block.createUserMerkleTree(userFile)
-# jsonFile=json.dumps(block.getBlock(),indent=4)
-# f=open("NavJsonFile.json","w")
-# f.write(jsonFile)
-# f.close()
-# try:
-# 	with ipfs.connect() as client:
-# 		res=client.add("NavJsonFile.json")
-# 		client.close()
-# 		# return res['Hash']
-# except:
-# 	print("Error while Sending file")
+	def minerRating(self):
+		return
+
+	def calculateContentCreatorRating(self):
+		return
 
 
-# f=open("NavJsonFile.json","r")
-# data=json.load(f)
-# data1=block.getListOfUserAddress(data)
-# print(data1)
+
+
 
 

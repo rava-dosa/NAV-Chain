@@ -2,18 +2,18 @@ import ipfshttpclient as ipfs
 from datetime import date
 import uuid
 
-def DownloadFile(fileHash):
+def DownloadFile(fileHash,outputFileName):
 	try:
 		with ipfs.connect() as client:
 			fileData=client.cat(fileHash)
 			client.close()
-			date_string=date.today()
-			filename=date_string+uuid.uuid4()
-			f=open(filename,"wb")
+			f=open(outputFileName,"wb")
 			f.save(fileData)
 			f.close()
+			return 1
 	except:
 		print("Error while downloading file")
+		return 0
 
 def sendFile(filename):
 	try:
