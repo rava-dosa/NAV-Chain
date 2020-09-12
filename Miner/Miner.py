@@ -6,18 +6,24 @@ from Model.BlockChain import BlockChain
 from Model.User import User
 from Utils.Ipfs import ipfs
 import time
+import random
 
 class Miner:
-	def __init__(self,id):
+	def __init__(self,id,lastblockAddress,genre,size):
 		self.id=id
+		self.blockChain=BlockChain(lastblockAddress)
 		self.previous_hash=""
 		self.genre=""
 		self.size=""
 		self.newsfiles=[]
-		self.block=Block(id,"","","")
+		
 		self.vote={}
 		self.creatorList={}
 		self.castvote={}
+		#download last block in blockchain
+		userContent=self.blockChain.getUserContent()
+		previousHash=self.blockchain.getBlockHash()
+		self.block=Block(id,previousHash,lastblockAddress,genre,size,userContent)
 
 	def ReceiveContent(self,id,text,genre):
 		#Code for recieving file from content creator
@@ -70,6 +76,10 @@ class Miner:
 	
 	def requestConsensus(self):
 		#Generate a random number between 1 and 100000
+		minerFileHash=self.block["Body"]["UserContent"][self.id]
+		minerRating=self.blockChain.getMiningRating(minerFileHash)
+		age==self.blockChain.getMinerAge(minerFileHash)
+		randomNumber=random.randrange(100000)
 		data={
 			"Miner":self.id,
 			"MinerRating":minerRating,
@@ -78,10 +88,16 @@ class Miner:
 			"RandomNumber":randomNumber
 		}
 		#Send this data to all random number
-
+	def RecieveConsensus(self):
+		#Recieve json file and store it in a directory ConsensunDirectory
+		directory="NAV/ConsensusDirectory"
+		if not os.path.exists(directory):
+			os.mkdir(directory)
+		pass
 	def consensusAlgorithm(self):
 		#recieve the data and store in a directory in json form
-		fileArray=os.listdir("Directoryname")
+		directory="NAV/ConsensusDirectory"
+		fileArray=os.listdir(directory)
 		totalRequest=0
 		scorelist=[]
 		randomNumber=[]
@@ -128,6 +144,7 @@ class Miner:
 		self.block.addNews(newsFileHash)
 		self.block.createNewsMerkleTree(newsFileHash)
 
+		
 		#update ContentCreator Rating
 		for creator,content in creatorList.keys():
 			userFileHash=self.block["Body"]["UserContent"][creator]
@@ -136,6 +153,8 @@ class Miner:
 			data=json.load(f)
 			f.close()
 			user=User(data["UserId"],data["VotingRating"],data["ContentRating"],data["ContentList"],data["MiningRating"],data["UpiId"],data["BlockList"],data["NavBirth"])
+			#Calculate contentRating
+			contentRating=self.block.calculateContentRating(creator)
 			user.updateContentRating(contentRating)
 			user.updateContentList(fileToHash[content])
 			userFile=json.dumps(user.getUser(),indent=4)
@@ -171,4 +190,4 @@ class Miner:
 		self.genre=""
 		self.size=""
 		self.newsfiles=[]
-		self.block=Block.Block(id,"","","")
+		self.block=Block.Block(id,"","","",0,{})

@@ -7,7 +7,7 @@ class User:
 		self.MiningRating=MiningRating
 		self.UpiId=UpiId
 		self.BlockList=[]
-		self.NavBirth=[]
+		self.NavBirth=NavBirth
 
 	def updateVotingRating(self,VotingRating):
 		self.VotingRating=VotingRating

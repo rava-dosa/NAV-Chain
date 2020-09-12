@@ -1,4 +1,5 @@
 from Utils import Ipfs
+from Utils import Hash
 import os.path
 
 class BlockChain:
@@ -59,6 +60,24 @@ class BlockChain:
 		else:
 			return 0
 
+	def getMinerAge(self,minerFileHash):
+		outputfile=minerFileHash+".json"
+		count=0
+		res=0
+		while res==0 and count<3:
+			if os.path.exists(outputfile):
+				res=1
+			else:
+				res=Ipfs.downloadFile(minerFileHash,outputfile)
+			count=count+1
+		if res==1:
+			f=open(outputfile,"r")
+			miner=json.load(f)
+			navAge=miner["Header"]["NavBirth"]
+			return navAge
+		else:
+			return 0
+
 	def downloadBlockFile(self,blockFileHash):
 		outputfile=blockFileHash+".json"
 		count=0
@@ -98,3 +117,36 @@ class BlockChain:
 			if not calculatedPreviousBlockHash.equals(storedPreviousBlockHash):
 				return False
 		return True
+
+	def getUserContent(self):
+		outputfile=self.lastblockAddress+".json"
+		count=0
+		res=0
+		while res==0 and count<3:
+			if os.path.exists(outputfile):
+				res=1
+			else:
+				res=Ipfs.downloadFile(minerFileHash,outputfile)
+			count=count+1
+		if res==1:
+			f=open(outputfile,"r")
+			block=json.load(f)
+			userContent=block["Body"]["UserContent"]
+			return userContent
+		else:
+			return {}
+
+	def getBlockHash(self):
+		outputfile=self.lastblockAddress+".json"
+		count=0
+		res=0
+		while res==0 and count<3:
+			if os.path.exists(outputfile):
+				res=1
+			else:
+				res=Ipfs.downloadFile(minerFileHash,outputfile)
+			count=count+1
+		if res==1:
+			return Hash.CalculateHash(outputfile)
+		else:
+			return ""
