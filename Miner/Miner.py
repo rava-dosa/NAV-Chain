@@ -163,13 +163,25 @@ class Miner:
 			f.close()
 			UserId.append(creator)
 			UserFileHash.append(ipfs.sendFile("user.json"))
-		self.block.update(UserId,UserFileHash)
+		
 
 			
 
 		minerFileHash=self.block["Body"]["UserContent"][self.id]
-
-
+		miningRating=self.block.CalculateMiningRating(miner)
+		ipfs.downloadFile(minerFileHash,"miner.json")
+		f=open("miner.json","r")
+		data=json.load(f)
+		f.close()
+		user=User(data["UserId"],data["VotingRating"],data["ContentRating"],data["ContentList"],data["MiningRating"],data["UpiId"],data["BlockList"],data["NavBirth"])
+		user.updateMiningRating(miningRating)
+		userFile=json.dumps(user.getUser(),indent=4)
+		f=open("userFile.json","wb")
+		f.write(userFile)
+		f.close()
+		UserId.append(creator)
+		UserFileHash.append(ipfs.sendFile("user.json"))
+		self.block.update(UserId,UserFileHash)
 
 
 
