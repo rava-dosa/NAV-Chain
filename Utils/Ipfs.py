@@ -10,11 +10,11 @@ def DownloadFile(fileHash,outputFileName):
 			os.system("ipfs get "+fileHash)
 			os.rename(fileHash,outputFileName)
 			# fileData=client.cat(fileHash)
-			# client.close()
+		client.close()
 			# f=open(outputFileName,"w")
 			# f.save(fileData)
 			# f.close()
-			return 1
+		return 1
 	except:
 		print("Error while downloading file")
 		return 0
