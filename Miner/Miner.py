@@ -7,7 +7,7 @@ from Model.User import User
 from Utils.Ipfs import ipfs
 import time
 import random
-
+import requests
 class Miner:
 	def __init__(self,id,lastblockAddress,genre,size):
 		self.id=id
@@ -16,7 +16,9 @@ class Miner:
 		self.genre=""
 		self.size=""
 		self.newsfiles=[]
-		
+		self.peerIp=[]
+		self.clientIp=[]
+		self.unverifiednews=[]
 		self.vote={}
 		self.creatorList={}
 		self.castvote={}
@@ -25,17 +27,24 @@ class Miner:
 		previousHash=self.blockchain.getBlockHash()
 		self.block=Block(id,previousHash,lastblockAddress,genre,size,userContent)
 
-	def ReceiveContent(self,id,text,genre):
+	def ReceiveContent(self,miner_id,id,text,genre):
 		#Code for recieving file from content creator
-		if not os.path.exists("NAV/NewsContent"):
-			os.mkdir("NAV/NewsContent")
+		# if not os.path.exists("NAV/NewsContent"):
+		# 	os.mkdir("NAV/NewsContent")
+		temp={"miner_id":miner_id,"id":id,"text":text,"genre":genre}
+		self.unverifiednews.append({"miner_id":miner_id,"id":id,"text":text,"genre":genre})
+		for x in self.peerIp:
+			if(id==self.id):
+				#should be done in async fashion
+				requests.post("{}:80005/getNewsfromPeer".format(x), data = temp)
 		#Get file from creators and store in this directory
 		# self.creatorList[fileName]=creatorId
-		return
+		return ""
 
 	def ShowContent(self):
-		if os.path.exists("NAV/NewsContent")
-			return os.listdir("NAV/NewsContent")
+		return ""
+		# if os.path.exists("NAV/NewsContent")
+		# 	return os.listdir("NAV/NewsContent")
 
 	def SelectNews(self,fileName):
 		#Write code for selecting  news
