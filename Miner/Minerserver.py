@@ -7,7 +7,7 @@ from Utils.Navtime import NavTime
 from Utils.Hash import CalculateFileHash
 
 app = Flask(__name__)
-miner = Miner(CalculateFileHash("/home/user/NAV-Chain/demo/id_rsa.pub"))
+miner = Miner(CalculateFileHash("/home/user/NAV-Chain/demo/id_rsa.pub"),"","","")
 time = NavTime()
 @app.route("/getNewsFromClient",methods=["POST"])
 def getNewsFromClient():

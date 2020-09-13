@@ -8,7 +8,9 @@
     <img alt="Twitter: Apoorva" src="https://img.shields.io/twitter/follow/rava_dosa.svg?style=social" />
   </a>
 </p>
-
+<p>
+<img alt="NAV-Chain Logo" src="https://raw.githubusercontent.com/rava-dosa/NAV-Chain/master/assets/bit.png">
+</p>
 > NAV is a Blockchain based News Aggregation and verification project aimed to verify the significance and credibility of news and decentralize the media group
 
 
@@ -16,6 +18,9 @@
 
 ### ✨ [Demo]()
 
+### ✨ Basic Flow
+![Consensus Architecture](https://i.giphy.com/media/kbXPvgbK0R8ecXK8Yw/source.gif)
+![Money Sharing Architecture](https://i.giphy.com/media/LQ3A2BwiRskPH2Ww27/source.gif)
 ### 📝 Features
 
 - Create and View News and Other article. Only Text MimeType Supported Yet.
