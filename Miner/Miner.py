@@ -311,8 +311,8 @@ class Miner:
 		self.block=Block.Block(id,"","","",0,{})
 
 
-miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","","Economy","")
-miner.SelectNews("/home/gaurav/NAV-Chain/Miner/news.txt")
-miner.CreateBlockForPublishing()
-res=miner.publishBlock()
-print(res)
+# miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","","Economy","")
+# miner.SelectNews("/home/gaurav/NAV-Chain/Miner/news.txt")
+# miner.CreateBlockForPublishing()
+# res=miner.publishBlock()
+# print(res)

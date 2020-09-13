@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from flask import Flask,request
+from flask import Flask,request,jsonify
 from Miner import Miner
 from Utils.Navtime import NavTime
 from Utils.Hash import CalculateFileHash
@@ -18,7 +18,7 @@ def getNewsFromClient():
     genre=request.json["genre"]
     miner.ReceiveContent(miner.id,user_id,text,genre)
     miner.clientIp.append(ip)
-    return ""
+    return jsonify({"bid":"QmdDyNf1oKqH44cRisLE9a298cBcry3ifrpGrweXGEjZt8"})
 
 @app.route("/getNewsfromPeer",methods=["POST"])
 def getNewsfromPeer():
