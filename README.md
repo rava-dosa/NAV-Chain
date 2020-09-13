@@ -19,7 +19,11 @@
 ### ✨ [Demo]()
 
 ### ✨ Basic Flow
+
 ![Consensus Architecture](https://i.giphy.com/media/kbXPvgbK0R8ecXK8Yw/source.gif)
+
+### 💰💰 Money Sharing
+
 ![Money Sharing Architecture](https://i.giphy.com/media/LQ3A2BwiRskPH2Ww27/source.gif)
 ### 📝 Features
 
