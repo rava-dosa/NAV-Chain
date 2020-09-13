@@ -126,7 +126,7 @@ class BlockChain:
 			if os.path.exists(outputfile):
 				res=1
 			else:
-				res=Ipfs.downloadFile(minerFileHash,outputfile)
+				res=Ipfs.DownloadFile(self.lastblockAddress,outputfile)
 			count=count+1
 		if res==1:
 			f=open(outputfile,"r")
@@ -144,7 +144,7 @@ class BlockChain:
 			if os.path.exists(outputfile):
 				res=1
 			else:
-				res=Ipfs.downloadFile(minerFileHash,outputfile)
+				res=Ipfs.DownloadFile(self.lastblockAddress,outputfile)
 			count=count+1
 		if res==1:
 			return Hash.CalculateHash(outputfile)

@@ -6,7 +6,7 @@ import json
 from .BlockChain import BlockChain
 
 class Block:
-	def __init__(self,miner_id,previous_Hash,previousHashBlockAddress,genre,size):
+	def __init__(self,miner_id,previous_Hash,previousHashBlockAddress,genre,size,userContent):
 		timestamp=str(time.time())
 		newsTreeRootHash=""
 		newsTree=""
@@ -26,7 +26,7 @@ class Block:
 				"Body":{"NewsTree":newsTree,
 				"UserTree":userTree,
 				"NewsContent":[],
-				"UserContent":{},
+				"UserContent":userContent,
 				"Vote":{},
 				"TotalVote":{},
 				"NewsScore":{}}}
@@ -115,8 +115,8 @@ class Block:
 	def minerRating(self):
 		return
 
-	def calculateContentCreatorRating(self):
-		return
+	def calculateContentRating(self,creator):
+		return 1
 
 
 

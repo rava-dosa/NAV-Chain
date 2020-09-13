@@ -4,8 +4,10 @@ sys.path.insert(0, os.path.abspath('..'))
 from Model.Block import Block
 from Model.BlockChain import BlockChain
 from Model.User import User
-from Utils.Ipfs import ipfs
+# from Utils.Ipfs import Ipfs
+from Utils import Ipfs
 import time
+import json
 import random
 import requests
 class Miner:
@@ -22,10 +24,12 @@ class Miner:
 		self.vote={}
 		self.creatorList={}
 		self.castvote={}
+		self.BlockStatus=True
+		self.lastblockAddress=lastblockAddress
 		#download last block in blockchain
-		userContent=self.blockChain.getUserContent()
-		previousHash=self.blockchain.getBlockHash()
-		self.block=Block(id,previousHash,lastblockAddress,genre,size,userContent)
+		self.userContent=self.blockChain.getUserContent()
+		self.previousHash=self.blockChain.getBlockHash()
+		self.block=Block(id,self.previousHash,self.lastblockAddress,genre,size,self.userContent)
 
 	def ReceiveContent(self,miner_id,id,text,genre):
 		#Code for recieving file from content creator
@@ -49,7 +53,7 @@ class Miner:
 	def SelectNews(self,fileName):
 		#Write code for selecting  news
 		if fileName not in self.newsfiles:
-			self.newsfiles.remove(fileName)
+			self.newsfiles.append(fileName)
 
 	def DeSelectNews(self,fileName):
 		if fileName in self.newsfiles:
@@ -141,11 +145,15 @@ class Miner:
 		#Write code for creating a block
 		if not self.BlockStatus:
 			return
-		self.block=Block(self.id,self.previous_hash,self.previousHashBlockAddress,self.genre,self.size)
+		self.block=Block(self.id,self.previous_hash,self.lastblockAddress,self.genre,self.size,self.userContent)
 		newsFileHash=[]
 		fileToHash={}
+		self.creatorList={self.newsfiles[0]:"QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG"}
+
+
 		for news in self.newsfiles:
-			newsHash=ipfs.sendFile(news)
+			print(self.creatorList[news])
+			newsHash=Ipfs.sendFile(news)
 			newsFileHash.append(newsHash)
 			creatorId=self.creatorList[news]
 			fileToHash[news]=newsHash
@@ -155,52 +163,83 @@ class Miner:
 
 		
 		#update ContentCreator Rating
-		for creator,content in creatorList.keys():
-			userFileHash=self.block["Body"]["UserContent"][creator]
-			ipfs.downloadFile(userFileHash,"user.json")
-			f=open("user.json","r")
-			data=json.load(f)
-			f.close()
+		UserId=[]
+		UserFileHash=[]
+		for content,creator in self.creatorList.items():
+			body=self.block.getBody()
+			data={}
+			if creator in body["UserContent"].keys():
+				userFileHash=body["UserContent"][creator]
+				# userFileHash=self.block["Body"]["UserContent"][creator]
+				ipfs.DownloadFile(userFileHash,"user.json")
+				f=open("user.json","r")
+				data=json.load(f)
+				f.close()
+			else:
+				data={
+					"UserId":creator,
+					"VotingRating":0,
+					"ContentRating":0,
+					"ContentList":[],
+					"MiningRating":0,
+					"UpiId":"",
+					"BlockList":[],
+					"NavBirth":""
+				}
 			user=User(data["UserId"],data["VotingRating"],data["ContentRating"],data["ContentList"],data["MiningRating"],data["UpiId"],data["BlockList"],data["NavBirth"])
 			#Calculate contentRating
 			contentRating=self.block.calculateContentRating(creator)
 			user.updateContentRating(contentRating)
 			user.updateContentList(fileToHash[content])
 			userFile=json.dumps(user.getUser(),indent=4)
-			f=open("userFile.json","wb")
+			f=open("userFile.json","w")
 			f.write(userFile)
 			f.close()
 			UserId.append(creator)
-			UserFileHash.append(ipfs.sendFile("user.json"))
+			UserFileHash.append(Ipfs.sendFile("userFile.json"))
 		
 
 			
 
-		minerFileHash=self.block["Body"]["UserContent"][self.id]
-		miningRating=self.block.CalculateMiningRating(miner)
-		ipfs.downloadFile(minerFileHash,"miner.json")
-		f=open("miner.json","r")
-		data=json.load(f)
-		f.close()
+		# minerFileHash=self.block["Body"]["UserContent"][self.id]
+		miningRating=0
+		if self.id in body["UserContent"].keys():
+			minerFileHash=body["UserContent"][self.id]
+			miningRating=self.block.CalculateMiningRating(miner)
+			ipfs.DownloadFile(minerFileHash,"miner.json")
+			f=open("miner.json","r")
+			data=json.load(f)
+			f.close()
+		else:
+			data={
+					"UserId":self.id,
+					"VotingRating":0,
+					"ContentRating":0,
+					"ContentList":[],
+					"MiningRating":0,
+					"UpiId":"",
+					"BlockList":[],
+					"NavBirth":""
+				}
 		user=User(data["UserId"],data["VotingRating"],data["ContentRating"],data["ContentList"],data["MiningRating"],data["UpiId"],data["BlockList"],data["NavBirth"])
 		user.updateMiningRating(miningRating)
 		userFile=json.dumps(user.getUser(),indent=4)
-		f=open("userFile.json","wb")
+		f=open("userFile.json","w")
 		f.write(userFile)
 		f.close()
 		UserId.append(creator)
-		UserFileHash.append(ipfs.sendFile("user.json"))
-		self.block.update(UserId,UserFileHash)
+		UserFileHash.append(Ipfs.sendFile("user.json"))
+		self.block.updateUsers(UserId,UserFileHash)
 
 
 
 	def publishBlock(self):
 		blockFile=json.dumps(self.block.getBlock(),indent=4)
 		blockFileName="block"+str(time.time())+".json"
-		f=open(blockFileName,"wb")
+		f=open(blockFileName,"w")
 		f.write(blockFile)
 		f.close()
-		blockAddress=ipfs.sendFile(blockFileName)
+		blockAddress=Ipfs.sendFile(blockFileName)
 
 		#Send this blockaddress to all peers
 		return blockAddress
@@ -212,3 +251,10 @@ class Miner:
 		self.size=""
 		self.newsfiles=[]
 		self.block=Block.Block(id,"","","",0,{})
+
+
+miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","","","Sports")
+miner.SelectNews("/home/gaurav/NAV-Chain/demo/id_rsa.pub")
+miner.CreateBlockForPublishing()
+res=miner.publishBlock()
+print(res)
