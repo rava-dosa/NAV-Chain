@@ -311,7 +311,7 @@ class Miner:
 		self.block=Block.Block(id,"","","",0,{})
 
 
-miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","","Sports","")
+miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","QmVzpAwtdtqhxxLk6TF7UvhCphwySgcmK9Yo158tJEzVoP","Sports","")
 miner.SelectNews("/home/gaurav/NAV-Chain/demo/id_rsa.pub")
 miner.CreateBlockForPublishing()
 res=miner.publishBlock()

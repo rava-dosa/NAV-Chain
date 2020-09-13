@@ -4,6 +4,7 @@ import hashlib
 import ipfshttpclient as ipfs
 import json
 from .BlockChain import BlockChain
+from Utils import Ipfs
 
 class Block:
 	def __init__(self,miner_id,previous_Hash,previousHashBlockAddress,genre,size,userContent):
@@ -120,7 +121,7 @@ class Block:
 
 
 	def calculateMinerRating(self):
-		header=self.block.getHeader()
+		header=self.getHeader()
 		miner=header["MinerId"]
 		#download miner file
 		res=Ipfs.DownloadFile(miner,"Miner.json")
