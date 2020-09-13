@@ -137,3 +137,5 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 demo/id_rsa
+Client/id_rsa
+*.json

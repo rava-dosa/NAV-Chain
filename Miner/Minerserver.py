@@ -7,7 +7,7 @@ from Utils.Navtime import NavTime
 from Utils.Hash import CalculateFileHash
 
 app = Flask(__name__)
-miner = Miner(CalculateFileHash("/home/user/NAV-Chain/demo/id_rsa"))
+miner = Miner(CalculateFileHash("/home/user/NAV-Chain/demo/id_rsa.pub"))
 time = NavTime()
 @app.route("/getNewsFromClient",methods=["POST"])
 def getNewsFromClient():
@@ -27,6 +27,13 @@ def getNewsfromPeer():
     miner_id=request["miner_id"]
     miner.ReceiveContent(miner_id,user_id,text,genre)
     miner.peerIp.append(ip)
+
+@app.route("/sendNewsToClient",methods=["GET"])
+def sendNewsToClient():
+    ip=request.remote_addr
+    user_id=request["id"]
+    newBlockid=request["blockid"]
+    return "newBlockid"
 
 def main():
     app.run(host='0.0.0.0', port=8005)
