@@ -1,4 +1,5 @@
 import sys, os
+import pdb
 sys.path.insert(0, os.path.abspath('..'))
 
 from Model.Block import Block
@@ -15,7 +16,7 @@ class Miner:
 		self.id=id
 		self.blockChain=BlockChain(lastblockAddress)
 		self.previous_hash=""
-		self.genre=""
+		self.genre=genre
 		self.size=""
 		self.newsfiles=[]
 		self.peerIp=[]
@@ -171,16 +172,28 @@ class Miner:
 			if creator in body["UserContent"].keys():
 				userFileHash=body["UserContent"][creator]
 				# userFileHash=self.block["Body"]["UserContent"][creator]
-				ipfs.DownloadFile(userFileHash,"user.json")
-				f=open("user.json","r")
-				data=json.load(f)
-				f.close()
+				res=Ipfs.DownloadFile(userFileHash,"user.json")
+				if res==1:
+					f=open("/home/gaurav/NAV-Chain/Miner/userFile.json","r")
+					data=json.load(f)
+					f.close()
+				else:
+					data={
+					"UserId":creator,
+					"VotingRating":0,
+					"ContentRating":0,
+					"ContentList":[content],
+					"MiningRating":0,
+					"UpiId":"",
+					"BlockList":[],
+					"NavBirth":""
+				}
 			else:
 				data={
 					"UserId":creator,
 					"VotingRating":0,
 					"ContentRating":0,
-					"ContentList":[],
+					"ContentList":[content],
 					"MiningRating":0,
 					"UpiId":"",
 					"BlockList":[],
@@ -192,24 +205,64 @@ class Miner:
 			user.updateContentRating(contentRating)
 			user.updateContentList(fileToHash[content])
 			userFile=json.dumps(user.getUser(),indent=4)
-			f=open("userFile.json","w")
+			f=open("/home/gaurav/NAV-Chain/Miner/userFile.json","w")
 			f.write(userFile)
 			f.close()
 			UserId.append(creator)
-			UserFileHash.append(Ipfs.sendFile("userFile.json"))
+			UserFileHash.append(Ipfs.sendFile("/home/gaurav/NAV-Chain/Miner/userFile.json"))
 		
 
 			
+		#Update block list
+		lastMiner=self.blockChain.getLastMiner()
+		if lastMiner in body["UserContent"].keys():
+			lastMinerFileHash=body["UserContent"][lastMiner]
+			res=Ipfs.DownloadFile(lastMinerFileHash,"LastMiner.json")
+			if res==1:
+				f=open("LastMiner.json","r")
+				data=json.load(f)
+				f.close()
+			else:
+				data={
+					"UserId":lastMiner,
+					"VotingRating":0,
+					"ContentRating":0,
+					"ContentList":[content],
+					"MiningRating":0,
+					"UpiId":"",
+					"BlockList":[],
+					"NavBirth":""
+				}
+			user=User(data["UserId"],data["VotingRating"],data["ContentRating"],data["ContentList"],data["MiningRating"],data["UpiId"],data["BlockList"],data["NavBirth"])
+			user.updateBlockList(self.lastblockAddress)
+			userFile=json.dumps(user.getUser(),indent=4)
+			f=open("user.json","w")
+			f.write(userFile)
+			f.close()
+			UserId.append(creator)
+			UserFileHash.append(Ipfs.sendFile("user.json"))
 
 		# minerFileHash=self.block["Body"]["UserContent"][self.id]
 		miningRating=0
 		if self.id in body["UserContent"].keys():
 			minerFileHash=body["UserContent"][self.id]
-			miningRating=self.block.CalculateMiningRating(miner)
-			ipfs.DownloadFile(minerFileHash,"miner.json")
-			f=open("miner.json","r")
-			data=json.load(f)
-			f.close()
+			miningRating=self.block.calculateMinerRating()
+			res=Ipfs.DownloadFile(minerFileHash,"miner.json")
+			if res==1:
+				f=open("miner.json","r")
+				data=json.load(f)
+				f.close()
+			else:
+				data={
+					"UserId":self.id,
+					"VotingRating":0,
+					"ContentRating":0,
+					"ContentList":[],
+					"MiningRating":0,
+					"UpiId":"",
+					"BlockList":[],
+					"NavBirth":""
+				}
 		else:
 			data={
 					"UserId":self.id,
@@ -229,13 +282,18 @@ class Miner:
 		f.close()
 		UserId.append(creator)
 		UserFileHash.append(Ipfs.sendFile("user.json"))
+
+		
+
+
+		
 		self.block.updateUsers(UserId,UserFileHash)
 
 
 
 	def publishBlock(self):
 		blockFile=json.dumps(self.block.getBlock(),indent=4)
-		blockFileName="block"+str(time.time())+".json"
+		blockFileName="block_next_to_"+self.lastblockAddress+".json"
 		f=open(blockFileName,"w")
 		f.write(blockFile)
 		f.close()
@@ -253,7 +311,7 @@ class Miner:
 		self.block=Block.Block(id,"","","",0,{})
 
 
-miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","","","Sports")
+miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","","Sports","")
 miner.SelectNews("/home/gaurav/NAV-Chain/demo/id_rsa.pub")
 miner.CreateBlockForPublishing()
 res=miner.publishBlock()

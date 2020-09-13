@@ -1,6 +1,7 @@
 from Utils import Ipfs
 from Utils import Hash
 import os.path
+import json
 
 class BlockChain:
 	def __init__(self,lastblockAddress):
@@ -147,6 +148,25 @@ class BlockChain:
 				res=Ipfs.DownloadFile(self.lastblockAddress,outputfile)
 			count=count+1
 		if res==1:
-			return Hash.CalculateHash(outputfile)
+			return Hash.CalculateFileHash(outputfile)
+		else:
+			return ""
+
+	def getLastMiner(self):
+		outputfile=self.lastblockAddress+".json"
+		count=0
+		res=0
+		while res==0 and count<3:
+			if os.path.exists(outputfile):
+				res=1
+			else:
+				res=Ipfs.DownloadFile(self.lastblockAddress,outputfile)
+			count=count+1
+		if res==1:
+			f=open(outputfile,"r")
+			block=json.load(f)
+			f.close()
+			miner=block["Header"]["MinerId"]
+			return miner
 		else:
 			return ""

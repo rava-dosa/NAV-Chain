@@ -93,16 +93,23 @@ class Block:
 			return [tree["name"]]
 
 	
+	def updateVote(self,miner,newsFiles):
+		for file in self.block["Body"]["NewsContnet"]:
+			if file in newsFiles:
+				self.block["Body"]["Vote"][file][miner]=1
+			else:
+				self.block["Body"]["Vote"][file][miner]=0
 
 	def calculateVotingScore(self):
 		bLockChain=BlockChain()
 		totalNews=0
 		totalScore=0
-		for newsHash,vote in self.block["Body"]["Vote"].items():
-			TotalVote=self.block["Body"]["TotalVote"][newsHash]
+		body=self.block.getBody()
+		for newsHash,vote in body["Vote"].items():
+			TotalVote=body["TotalVote"][newsHash]
 			score=0
 			for miner,v in vote.items():
-				minerDetailsFile=self.block["Body"]["UserContent"][miner]
+				minerDetailsFile=body["UserContent"][miner]
 				voterRating=bLockChain.getVoterRating(miner,minerDetailsFile)
 				score=score+voterRating*v
 			newsScore=score/TotalVote
@@ -112,8 +119,22 @@ class Block:
 		self.block["Header"]["BlockScore"]=totalScore/totalNews
 
 
-	def minerRating(self):
-		return
+	def calculateMinerRating(self):
+		header=self.block.getHeader()
+		miner=header["MinerId"]
+		#download miner file
+		res=Ipfs.DownloadFile(miner,"Miner.json")
+		if res==1:
+			f=open("Miner.json","r")
+			data=json.load(f)
+			f.close()
+			#get previous rating and number of block
+			rating=data["MiningRating"]
+			numberOfBlock=len(data["BlockList"])
+			minerRating=(numberOfBlock*rating+blockScore)/(numberOfBlock+1)
+			return minerRating
+		else:
+			return 0
 
 	def calculateContentRating(self,creator):
 		return 1
