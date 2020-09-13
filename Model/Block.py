@@ -3,7 +3,7 @@ from merklelib import MerkleTree,export,beautify
 import hashlib
 import ipfshttpclient as ipfs
 import json
-from BlockChain import BlockChain
+from .BlockChain import BlockChain
 
 class Block:
 	def __init__(self,miner_id,previous_Hash,previousHashBlockAddress,genre,size):
@@ -16,7 +16,7 @@ class Block:
 		self.block={"Header":{"Timestamp":timestamp,
 				"MinerId":miner_id,
 				"PreviousHash":previous_Hash,
-				"PreviousHashBlockAddress":previousHashBlockAddress
+				"PreviousHashBlockAddress":previousHashBlockAddress,
 				"Genre":genre,
 				"Size":size,
 				"NewsTreeRootHash":newsTreeRootHash,
