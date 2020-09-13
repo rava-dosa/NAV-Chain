@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 from Utils.Hash import CalculateFileHash
 from Utils.Ipfs import DownloadFile
-from Utils.getNews import getNews
+from Utils.getNews import getBlock
 while(1):
     idx=CalculateFileHash("{}/Client/id_rsa.pub".format("/home/gaurav/NAV-Chain"))
     genre=input("Enter News Genre: ")
@@ -15,6 +15,6 @@ while(1):
     # console.log(hashx)
 
     # newsFile=input("Enter news File:")
-    data=getNews(hashx)
+    data=getBlock(hashx)
     print(data)
 
