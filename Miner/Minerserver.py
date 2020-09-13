@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 
-from flask import Flask
+from flask import Flask,request
 from Miner import Miner
 from Utils.Navtime import NavTime
 from Utils.Hash import CalculateFileHash
@@ -12,11 +12,13 @@ time = NavTime()
 @app.route("/getNewsFromClient",methods=["POST"])
 def getNewsFromClient():
     ip=request.remote_addr
-    user_id=request["id"]
-    text=request["text"]
-    genre=request["genre"]
+    # print(request.)
+    user_id=request.json["id"]
+    text=request.json["text"]
+    genre=request.json["genre"]
     miner.ReceiveContent(miner.id,user_id,text,genre)
     miner.clientIp.append(ip)
+    return ""
 
 @app.route("/getNewsfromPeer",methods=["POST"])
 def getNewsfromPeer():

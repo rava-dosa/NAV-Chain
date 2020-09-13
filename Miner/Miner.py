@@ -174,7 +174,7 @@ class Miner:
 				# userFileHash=self.block["Body"]["UserContent"][creator]
 				res=Ipfs.DownloadFile(userFileHash,"user.json")
 				if res==1:
-					f=open("/home/gaurav/NAV-Chain/Miner/userFile.json","r")
+					f=open("/home/user/NAV-Chain/Miner/userFile.json","r")
 					data=json.load(f)
 					f.close()
 				else:
@@ -205,11 +205,11 @@ class Miner:
 			user.updateContentRating(contentRating)
 			user.updateContentList(fileToHash[content])
 			userFile=json.dumps(user.getUser(),indent=4)
-			f=open("/home/gaurav/NAV-Chain/Miner/userFile.json","w")
+			f=open("/home/user/NAV-Chain/Miner/userFile.json","w")
 			f.write(userFile)
 			f.close()
 			UserId.append(creator)
-			UserFileHash.append(Ipfs.sendFile("/home/gaurav/NAV-Chain/Miner/userFile.json"))
+			UserFileHash.append(Ipfs.sendFile("/home/user/NAV-Chain/Miner/userFile.json"))
 		
 
 			
@@ -312,7 +312,7 @@ class Miner:
 
 
 miner=Miner("QmegEEH5FivGUEUpYMT1kwUqvgGa8dh1ML5NfrtuCbV9QG","QmVzpAwtdtqhxxLk6TF7UvhCphwySgcmK9Yo158tJEzVoP","Sports","")
-miner.SelectNews("/home/gaurav/NAV-Chain/demo/id_rsa.pub")
+miner.SelectNews("/home/user/NAV-Chain/demo/id_rsa.pub")
 miner.CreateBlockForPublishing()
 res=miner.publishBlock()
 print(res)
